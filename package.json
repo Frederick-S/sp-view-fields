@@ -1,0 +1,27 @@
+{
+  "name": "sp-view-fields",
+  "version": "0.0.1",
+  "description": "Get view fields by SharePoint list view.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Frederick-S/sp-view-fields.git"
+  },
+  "keywords": [
+    "SharePoint"
+  ],
+  "author": "Frederick-S",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Frederick-S/sp-view-fields/issues"
+  },
+  "homepage": "https://github.com/Frederick-S/sp-view-fields#readme",
+  "dependencies": {
+    "is-guid": "0.0.1",
+    "sp-context-helper": "0.0.4",
+    "sp-each": "0.0.5"
+  }
+}

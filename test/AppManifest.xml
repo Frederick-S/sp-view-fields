@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--Created:cb85b80c-f585-40ff-8bfc-12ff4d0e34a9-->
+<App xmlns="http://schemas.microsoft.com/sharepoint/2012/app/manifest"
+     Name="SharePoint-App-SPViewFields-Test"
+     ProductID="{b11a0c07-f01f-4356-ba68-68f9d3dcf280}"
+     Version="1.0.0.0"
+     SharePointMinVersion="16.0.0.0"
+>
+  <Properties>
+    <Title>SharePoint App SPViewFields Test</Title>
+    <StartPage>~appWebUrl/Pages/Default.aspx?{StandardTokens}</StartPage>
+  </Properties>
+
+  <AppPrincipal>
+    <Internal />
+  </AppPrincipal>
+
+
+</App>

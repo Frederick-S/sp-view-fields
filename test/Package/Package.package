@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package dslVersion="1.0.0.0" 
+        Id="32a23859-e3ca-4d50-97c1-3dcf1643221f" 
+        solutionId="32a23859-e3ca-4d50-97c1-3dcf1643221f" 
+        xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel" 
+        name="SharePoint_App_SPViewFields_Test"
+        sharePointProductVersion="16.0">
+  <features>
+        <featureReference itemId="c26bab00-846a-4695-a3f7-ee6e0a00d6c1" />
+  </features>
+</package>
