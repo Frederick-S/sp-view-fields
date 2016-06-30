@@ -1,4 +1,4 @@
-# sp-view-fields
+# sp-view-fields [![Build Status](https://travis-ci.org/Frederick-S/sp-view-fields.svg?branch=master)](https://travis-ci.org/Frederick-S/sp-view-fields)
 Get view fields by SharePoint list view.
 
 ## Installation
