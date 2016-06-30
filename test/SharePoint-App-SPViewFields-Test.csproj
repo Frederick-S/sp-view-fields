@@ -43,6 +43,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Scripts\src\webpack.config.js" />
     <Content Include="TestList\Elements.xml" />
     <Content Include="TestList\Schema.xml" />
     <Content Include="TestList\TestListInstance\Elements.xml" />
@@ -52,6 +53,9 @@
     </None>
     <Content Include="Pages\Elements.xml" />
     <Content Include="Pages\Default.aspx" />
+    <None Include="Scripts\src\package.json" />
+    <None Include="Scripts\src\tsconfig.json" />
+    <None Include="Scripts\src\typings\globals\jquery\typings.json" />
     <None Include="TestList\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{6822e585-2847-47b3-917c-6908c8ffe577}</SharePointProjectItemId>
     </None>
@@ -105,6 +109,12 @@
     <AppManifestFile Include="AppManifest.xml">
       <SubType>Designer</SubType>
     </AppManifestFile>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\src\index.ts" />
+    <TypeScriptCompile Include="Scripts\src\typings\globals\jquery\index.d.ts" />
+    <TypeScriptCompile Include="Scripts\src\typings\index.d.ts" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

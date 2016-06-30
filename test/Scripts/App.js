@@ -44,34 +44,29 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var queryString = __webpack_require__(1);
-	var getViewFields = __webpack_require__(3);
-
-	var appWebUrl = queryString.parse(location.search).SPAppWebUrl;
-
+	/// <reference path='./typings/index.d.ts'/>
+	/// <reference path='../../../typings/index.d.ts'/>
+	"use strict";
+	var index_1 = __webpack_require__(1);
+	var query_string_1 = __webpack_require__(5);
+	var appWebUrl = query_string_1.parse(location.search).SPAppWebUrl;
 	var options = {
 	    webUrl: appWebUrl,
-	    useAppContextSite: false,
+	    isAppContextSite: false,
 	    list: 'TestList',
 	    view: 'All Items'
 	};
-
-	getViewFields(options, function (viewFields) {
+	index_1.getViewFields(options, function (viewFields) {
 	    var html = '<p>View fields of "All Items" view in <a href="' + appWebUrl + '/Lists/TestList" target="_blank">TestList</a>:</p>';
-
 	    html += '<ul>';
-
-	    for (var i = 0, length = viewFields.length; i < length; i++) {
+	    for (var i = 0, length_1 = viewFields.length; i < length_1; i++) {
 	        var viewField = viewFields[i];
-
 	        html += '<li>Field type: ' + viewField.get_typeAsString() + ', field internal name: ' + viewField.get_internalName() + '</li>';
 	    }
-
 	    html += '</ul>';
-
 	    $('#message').html(html);
-	}, function (errorMessage) {
-	    $('#message').html(errorMessage);
+	}, function (message) {
+	    $('#message').html(message);
 	});
 
 
@@ -79,25 +74,142 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/// <reference path="./typings/index.d.ts"/>
+	"use strict";
+	var is_guid_1 = __webpack_require__(2);
+	var sp_each_1 = __webpack_require__(3);
+	var sp_context_helper_1 = __webpack_require__(4);
+	function getViewFields(options, success, error) {
+	    var contextWrapper = sp_context_helper_1.contextHelper(options.webUrl, options.isAppContextSite);
+	    var clientContext = contextWrapper.clientContext;
+	    var web = contextWrapper.web;
+	    var list = is_guid_1.isGuid(options.list) ? web.get_lists().getById(options.list) : web.get_lists().getByTitle(options.list);
+	    var view = is_guid_1.isGuid(options.view) ? list.get_views().getById(new SP.Guid(options.view)) : list.get_views().getByTitle(options.view);
+	    var listFields = list.get_fields();
+	    var viewFields = view.get_viewFields();
+	    clientContext.load(viewFields);
+	    clientContext.load(listFields);
+	    clientContext.executeQueryAsync(function () {
+	        var fields = [];
+	        sp_each_1.each(listFields, function (listField) {
+	            sp_each_1.each(viewFields, function (viewField) {
+	                if (listField.get_internalName() === viewField) {
+	                    fields.push(listField);
+	                }
+	            });
+	        });
+	        success(fields);
+	    }, function (sender, args) {
+	        error(args.get_message());
+	    });
+	}
+	exports.getViewFields = getViewFields;
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	"use strict";
+	function isGuid(value) {
+	    return /^\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}?$/.test(value);
+	}
+	exports.isGuid = isGuid;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	/// <reference path="./typings/index.d.ts"/>
+	"use strict";
+	function each(collection, iteratee, context) {
+	    if (typeof collection.getEnumerator === 'function') {
+	        var index = 0;
+	        var current = null;
+	        var enumerator = collection.getEnumerator();
+	        while (enumerator.moveNext()) {
+	            current = enumerator.get_current();
+	            iteratee.call(context, current, index, collection);
+	            index++;
+	        }
+	    }
+	}
+	exports.each = each;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	/// <reference path="./typings/index.d.ts"/>
+	"use strict";
+	function contextHelper(webUrl, isAppContextSite) {
+	    var web = null;
+	    var site = null;
+	    var clientContext = null;
+	    var appContextSite = null;
+	    if (!webUrl || isAppContextSite) {
+	        clientContext = SP.ClientContext.get_current();
+	    }
+	    else {
+	        clientContext = new SP.ClientContext(webUrl);
+	    }
+	    if (isAppContextSite) {
+	        appContextSite = new SP.AppContextSite(clientContext, webUrl);
+	        web = appContextSite.get_web();
+	        site = appContextSite.get_site();
+	    }
+	    else {
+	        web = clientContext.get_web();
+	        site = clientContext.get_site();
+	    }
+	    return {
+	        web: web,
+	        site: site,
+	        clientContext: clientContext,
+	        appContextSite: appContextSite
+	    };
+	}
+	exports.contextHelper = contextHelper;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
-	var strictUriEncode = __webpack_require__(2);
+	var strictUriEncode = __webpack_require__(6);
+	var objectAssign = __webpack_require__(7);
+
+	function encode(value, opts) {
+		if (opts.encode) {
+			return opts.strict ? strictUriEncode(value) : encodeURIComponent(value);
+		}
+
+		return value;
+	}
 
 	exports.extract = function (str) {
 		return str.split('?')[1] || '';
 	};
 
 	exports.parse = function (str) {
+		// Create an object with no prototype
+		// https://github.com/sindresorhus/query-string/issues/47
+		var ret = Object.create(null);
+
 		if (typeof str !== 'string') {
-			return {};
+			return ret;
 		}
 
 		str = str.trim().replace(/^(\?|#|&)/, '');
 
 		if (!str) {
-			return {};
+			return ret;
 		}
 
-		return str.split('&').reduce(function (ret, param) {
+		str.split('&').forEach(function (param) {
 			var parts = param.replace(/\+/g, ' ').split('=');
 			// Firefox (pre 40) decodes `%3D` to `=`
 			// https://github.com/sindresorhus/query-string/pull/37
@@ -110,19 +222,26 @@
 			// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
 			val = val === undefined ? null : decodeURIComponent(val);
 
-			if (!ret.hasOwnProperty(key)) {
+			if (ret[key] === undefined) {
 				ret[key] = val;
 			} else if (Array.isArray(ret[key])) {
 				ret[key].push(val);
 			} else {
 				ret[key] = [ret[key], val];
 			}
+		});
 
-			return ret;
-		}, {});
+		return ret;
 	};
 
-	exports.stringify = function (obj) {
+	exports.stringify = function (obj, opts) {
+		var defaults = {
+			encode: true,
+			strict: true
+		};
+
+		opts = objectAssign(defaults, opts);
+
 		return obj ? Object.keys(obj).sort().map(function (key) {
 			var val = obj[key];
 
@@ -131,16 +250,28 @@
 			}
 
 			if (val === null) {
-				return key;
+				return encode(key, opts);
 			}
 
 			if (Array.isArray(val)) {
-				return val.sort().map(function (val2) {
-					return strictUriEncode(key) + '=' + strictUriEncode(val2);
-				}).join('&');
+				var result = [];
+
+				val.slice().forEach(function (val2) {
+					if (val2 === undefined) {
+						return;
+					}
+
+					if (val2 === null) {
+						result.push(encode(key, opts));
+					} else {
+						result.push(encode(key, opts) + '=' + encode(val2, opts));
+					}
+				});
+
+				return result.join('&');
 			}
 
-			return strictUriEncode(key) + '=' + strictUriEncode(val);
+			return encode(key, opts) + '=' + encode(val, opts);
 		}).filter(function (x) {
 			return x.length > 0;
 		}).join('&') : '';
@@ -148,123 +279,104 @@
 
 
 /***/ },
-/* 2 */
+/* 6 */
 /***/ function(module, exports) {
 
 	'use strict';
 	module.exports = function (str) {
 		return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-			return '%' + c.charCodeAt(0).toString(16);
+			return '%' + c.charCodeAt(0).toString(16).toUpperCase();
 		});
 	};
 
 
 /***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isGuid = __webpack_require__(4);
-	var each = __webpack_require__(5);
-	var contextHelper = __webpack_require__(6);
-
-	module.exports = function (options, done, error) {
-	    var contextWrapper = contextHelper(options.webUrl, options.useAppContextSite);
-	    var clientContext = contextWrapper.clientContext;
-	    var web = contextWrapper.web;
-	    var list = isGuid(options.list) ? web.get_lists().getById(options.list) : web.get_lists().getByTitle(options.list);
-	    var view = isGuid(options.view) ? list.get_views().getById(new SP.Guid(options.view)) : list.get_views().getByTitle(options.view);
-	    var listFields = list.get_fields();
-	    var viewFields = view.get_viewFields();
-
-	    clientContext.load(viewFields);
-	    clientContext.load(listFields);
-	    clientContext.executeQueryAsync(function () {
-	        var fields = [];
-
-	        each(listFields, function (listField) {
-	            each(viewFields, function (viewField) {
-	                if (listField.get_internalName() === viewField) {
-	                    fields.push(listField);
-	                }
-	            });
-	        });
-
-	        done(fields);
-	    }, function (sender, args) {
-	        error(args.get_message());
-	    });
-	};
-
-
-/***/ },
-/* 4 */
+/* 7 */
 /***/ function(module, exports) {
 
-	module.exports = function (value) {
-	    if (typeof value !== 'string') {
-	        return false;
-	    }
-	    
-	    return /^\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}?$/.test(value);
-	};
+	'use strict';
+	/* eslint-disable no-unused-vars */
+	var hasOwnProperty = Object.prototype.hasOwnProperty;
+	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
+	function toObject(val) {
+		if (val === null || val === undefined) {
+			throw new TypeError('Object.assign cannot be called with null or undefined');
+		}
 
-	var spEach = function (collection, iteratee, context) {
-	    if (typeof collection.getEnumerator === 'function') {
-	        var index = 0;
-	        var current = null;
-	        var enumerator = collection.getEnumerator();
-
-	        while (enumerator.moveNext()) {
-	            current = enumerator.get_current();
-
-	            iteratee.call(context, current, index, collection);
-
-	            index++;
-	        }
-	    }
-	};
-
-	module.exports = spEach;
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	function contextHelper(webUrl, crossSite) {
-	    var web = null;
-	    var site = null;
-	    var clientContext = null;
-	    var appContextSite = null;
-
-	    if (!webUrl) {
-	        clientContext = SP.ClientContext.get_current();
-	        web = clientContext.get_web();
-	        site = clientContext.get_site();
-	    } else if (crossSite) {
-	        clientContext = SP.ClientContext.get_current();
-	        appContextSite = new SP.AppContextSite(clientContext, webUrl);
-	        web = appContextSite.get_web();
-	        site = appContextSite.get_site();
-	    } else {
-	        clientContext = new SP.ClientContext(webUrl);
-	        web = clientContext.get_web();
-	        site = clientContext.get_site();
-	    }
-
-	    return {
-	        web: web,
-	        site: site,
-	        clientContext: clientContext,
-	        appContextSite: appContextSite
-	    };
+		return Object(val);
 	}
 
-	module.exports = contextHelper;
+	function shouldUseNative() {
+		try {
+			if (!Object.assign) {
+				return false;
+			}
+
+			// Detect buggy property enumeration order in older V8 versions.
+
+			// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+			var test1 = new String('abc');  // eslint-disable-line
+			test1[5] = 'de';
+			if (Object.getOwnPropertyNames(test1)[0] === '5') {
+				return false;
+			}
+
+			// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+			var test2 = {};
+			for (var i = 0; i < 10; i++) {
+				test2['_' + String.fromCharCode(i)] = i;
+			}
+			var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+				return test2[n];
+			});
+			if (order2.join('') !== '0123456789') {
+				return false;
+			}
+
+			// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+			var test3 = {};
+			'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+				test3[letter] = letter;
+			});
+			if (Object.keys(Object.assign({}, test3)).join('') !==
+					'abcdefghijklmnopqrst') {
+				return false;
+			}
+
+			return true;
+		} catch (e) {
+			// We don't expect any of the above to throw, but better to be safe.
+			return false;
+		}
+	}
+
+	module.exports = shouldUseNative() ? Object.assign : function (target, source) {
+		var from;
+		var to = toObject(target);
+		var symbols;
+
+		for (var s = 1; s < arguments.length; s++) {
+			from = Object(arguments[s]);
+
+			for (var key in from) {
+				if (hasOwnProperty.call(from, key)) {
+					to[key] = from[key];
+				}
+			}
+
+			if (Object.getOwnPropertySymbols) {
+				symbols = Object.getOwnPropertySymbols(from);
+				for (var i = 0; i < symbols.length; i++) {
+					if (propIsEnumerable.call(from, symbols[i])) {
+						to[symbols[i]] = from[symbols[i]];
+					}
+				}
+			}
+		}
+
+		return to;
+	};
 
 
 /***/ }

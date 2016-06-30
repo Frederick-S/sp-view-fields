@@ -6,5 +6,12 @@
     <File Path="Scripts\jquery-1.9.1.min.js" Url="Scripts/jquery-1.9.1.min.js" ReplaceContent="TRUE" />
     <File Path="Scripts\jquery-1.9.1.js" Url="Scripts/jquery-1.9.1.js" ReplaceContent="TRUE" />
     <File Path="Scripts\jquery-1.9.1.intellisense.js" Url="Scripts/jquery-1.9.1.intellisense.js" ReplaceContent="TRUE" />
+    <File Path="Scripts\src\typings\index.d.ts" Url="Scripts/src/typings/index.d.ts" ReplaceContent="TRUE" />
+    <File Path="Scripts\src\typings\globals\jquery\index.d.ts" Url="Scripts/src/typings/globals/jquery/index.d.ts" ReplaceContent="TRUE" />
+    <File Path="Scripts\src\typings\globals\jquery\typings.json" Url="Scripts/src/typings/globals/jquery/typings.json" ReplaceContent="TRUE" />
+    <File Path="Scripts\src\index.ts" Url="Scripts/src/index.ts" ReplaceContent="TRUE" />
+    <File Path="Scripts\src\package.json" Url="Scripts/src/package.json" ReplaceContent="TRUE" />
+    <File Path="Scripts\src\tsconfig.json" Url="Scripts/src/tsconfig.json" ReplaceContent="TRUE" />
+    <File Path="Scripts\src\webpack.config.js" Url="Scripts/src/webpack.config.js" ReplaceContent="TRUE" />
   </Module>
 </Elements>

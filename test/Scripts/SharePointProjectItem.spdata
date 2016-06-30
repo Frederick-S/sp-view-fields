@@ -7,5 +7,12 @@
     <ProjectItemFile Source="jquery-1.9.1.min.js" Target="Scripts\" Type="ElementFile" />
     <ProjectItemFile Source="jquery-1.9.1.js" Target="Scripts\" Type="ElementFile" />
     <ProjectItemFile Source="jquery-1.9.1.intellisense.js" Target="Scripts\" Type="ElementFile" />
+    <ProjectItemFile Source="src\typings\index.d.ts" Target="Scripts\src\typings\" Type="ElementFile" />
+    <ProjectItemFile Source="src\typings\globals\jquery\index.d.ts" Target="Scripts\src\typings\globals\jquery\" Type="ElementFile" />
+    <ProjectItemFile Source="src\typings\globals\jquery\typings.json" Target="Scripts\src\typings\globals\jquery\" Type="ElementFile" />
+    <ProjectItemFile Source="src\index.ts" Target="Scripts\src\" Type="ElementFile" />
+    <ProjectItemFile Source="src\package.json" Target="Scripts\src\" Type="ElementFile" />
+    <ProjectItemFile Source="src\tsconfig.json" Target="Scripts\src\" Type="ElementFile" />
+    <ProjectItemFile Source="src\webpack.config.js" Target="Scripts\src\" Type="ElementFile" />
   </Files>
 </ProjectItem>
