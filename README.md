@@ -1,4 +1,6 @@
 # sp-view-fields [![Build Status](https://travis-ci.org/Frederick-S/sp-view-fields.svg?branch=master)](https://travis-ci.org/Frederick-S/sp-view-fields)
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/Frederick-S/sp-view-fields.svg)](https://greenkeeper.io/)
 Get view fields by SharePoint list view.
 
 ## Installation
